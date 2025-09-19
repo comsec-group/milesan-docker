@@ -97,20 +97,12 @@ RUN echo "Cloning the repositories!"
 RUN mkdir -p $MILESAN_DESIGNS
 RUN cd $MILESAN_DESIGNS && git clone  https://github.com/comsec-group//milesan-chipyard.git
 RUN cd $MILESAN_DESIGNS/milesan-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
-# Make sure to fix the BOOM bug
-RUN sed -i 's/r_buffer_fin.rm := io.fcsr_rm/r_buffer_fin.rm := Mux(ImmGenRm(io.req.bits.uop.imm_packed) === 7.U, io.fcsr_rm, ImmGenRm(io.req.bits.uop.imm_packed))/' $MILESAN_DESIGNS/milesan-chipyard/generators/boom/src/main/scala/exu/execution-units/fdiv.scala
-# Make sure that the Chipyard will support supervisor mode
-RUN sed -i 's/useSupervisor: Boolean = false,/useSupervisor: Boolean = true,/' $MILESAN_DESIGNS/milesan-chipyard/generators/boom/src/main/scala/common/parameters.scala
 COPY config-mixins.scala $MILESAN_DESIGNS/milesan-chipyard/generators/boom/src/main/scala/common
 
 RUN cd $MILESAN_DESIGNS && git clone https://github.com/comsec-group/milesan-pt-chipyard.git
 # add authentication token to .gitmodules
-RUN cd $MILESAN_DESIGNS/phantomtrails-chipyard && git submodule set-url generators/boom  https://github.com/comsec-group/milesan-pt-boom.git
-RUN cd $MILESAN_DESIGNS/phantomtrails-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
-# Make sure to fix the BOOM bug
-# RUN sed -i 's/r_buffer_fin.rm := io.fcsr_rm/r_buffer_fin.rm := Mux(ImmGenRm(io.req.bits.uop.imm_packed) === 7.U, io.fcsr_rm, ImmGenRm(io.req.bits.uop.imm_packed))/' $MILESAN_DESIGNS/phantomtrails-chipyard/generators/boom/src/main/scala/exu/execution-units/fdiv.scala
-# Make sure that the Chipyard will support supervisor mode
-# RUN sed -i 's/useSupervisor: Boolean = false,/useSupervisor: Boolean = true,/' $MILESAN_DESIGNS/phantomtrails-chipyard/generators/boom/src/main/scala/common/parameters.scala
+RUN cd $MILESAN_DESIGNS/milesan-pt-chipyard && git submodule set-url generators/boom  https://github.com/comsec-group/milesan-pt-boom.git
+RUN cd $MILESAN_DESIGNS/milesan-pt-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
 # COPY config-mixins.scala $MILESAN_DESIGNS/phantomtrails-chipyard/generators/boom/src/main/scala/common
 
 
