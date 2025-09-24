@@ -143,21 +143,21 @@ RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MN
 # RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
 RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true
-RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make build_drfuzz_mem_notrace_modelsim" || true ; fi
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make build_druzz_mem_notrace_modelsim" || true
+RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true ; fi
 # RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
 RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true
-RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make build_drfuzz_mem_notrace_modelsim" || true ; fi
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make build_druzz_mem_notrace_modelsim" || true
+RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true ; fi
 # RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
 RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true
-RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make build_drfuzz_mem_notrace_modelsim" || true ; fi
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make build_druzz_mem_notrace_modelsim" || true
+RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true ; fi
 # RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
 RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true
-RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make build_drfuzz_mem_notrace_modelsim" || true ; fi
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make build_druzz_mem_notrace_modelsim" || true
+RUN if [ "$COMPILE_VERILATOR_TARGETS" = "true" ] ; then bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true ; fi
 # RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_drfuzz_mem_trace" || true
