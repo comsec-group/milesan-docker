@@ -26,9 +26,11 @@ RUN add-apt-repository -y ppa:openjdk-r/ppa && \
 # install oh-my-bash
 RUN bash -c "$(wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O -)"
 RUN sed 's/OSH_THEME="font"/OSH_THEME="half-life"/g' ~/.bashrc
+
 # Some environment variables
 ENV HOME=/root
 ENV TMP_MNT=/tmp_mnt
+ENV LOCAL_MNT=$TMP_MNT
 ENV PREFIX_MILESAN=$HOME/prefix-milesan
 ENV CARGO_HOME=$PREFIX_MILESAN/.cargo
 ENV RUSTUP_HOME=$PREFIX_MILESAN/.rustup
@@ -40,7 +42,6 @@ ENV RUSTUPEXEC=$CARGO_HOME/bin/rustup
 ENV CARGOEXEC=$CARGO_HOME/bin/cargo
 ENV PATH=$PATH:$PREFIX_MILESAN/bin
 ENV PATH=$PATH:$RISCV/bin
-
 # Install RISC-V toolchain
 RUN apt-get install -y autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build
 RUN git clone https://github.com/riscv/riscv-gnu-toolchain
@@ -50,8 +51,8 @@ RUN cd riscv-gnu-toolchain && git checkout 2023.06.09 && ./configure --prefix=$R
 RUN git clone https://github.com/riscv-software-src/riscv-isa-sim.git
 RUN cd riscv-isa-sim && mkdir build && cd build && ../configure --prefix=$RISCV && make -j 200 && make install
 
-RUN git clone https://github.com/comsec-group/milesan-yosys.git /milesan-yosys --recursive
-RUN cd milesan-yosys && git submodule update --init && make -j 200 && make install
+RUN git clone https://github.com/milesan-artifacts/milesan-yosys.git $TMP_MNT/milesan-yosys --recursive
+RUN cd $TMP_MNT/milesan-yosys && git submodule update --init && make -j 200 && make install
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -95,23 +96,22 @@ RUN git clone https://github.com/verilator/verilator && cd verilator && git chec
 
 RUN echo "Cloning the repositories!"
 RUN mkdir -p $MILESAN_DESIGNS
-RUN cd $MILESAN_DESIGNS && git clone  https://github.com/comsec-group//milesan-chipyard.git
+RUN cd $MILESAN_DESIGNS && git clone  https://github.com/milesan-artifacts//milesan-chipyard.git
 RUN cd $MILESAN_DESIGNS/milesan-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
 COPY config-mixins.scala $MILESAN_DESIGNS/milesan-chipyard/generators/boom/src/main/scala/common
 
-RUN cd $MILESAN_DESIGNS && git clone https://github.com/comsec-group/milesan-pt-chipyard.git
-# add authentication token to .gitmodules
-RUN cd $MILESAN_DESIGNS/milesan-pt-chipyard && git submodule set-url generators/boom  https://github.com/comsec-group/milesan-pt-boom.git
+RUN cd $MILESAN_DESIGNS && git clone https://github.com/milesan-artifacts/milesan-pt-chipyard.git
 RUN cd $MILESAN_DESIGNS/milesan-pt-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
 # COPY config-mixins.scala $MILESAN_DESIGNS/phantomtrails-chipyard/generators/boom/src/main/scala/common
 
 
-RUN cd $MILESAN_DESIGNS && git clone https://github.com/comsec-group/milesan-cva6.git --recursive
-RUN cd $MILESAN_DESIGNS && git clone https://github.com/comsec-group/milesan-kronos.git --recursive
-RUN cd $MILESAN_DESIGNS && git clone https://github.com/comsec-group/milesan-openc910.git --recursive
+RUN cd $MILESAN_DESIGNS && git clone https://github.com/milesan-artifacts/milesan-cva6.git --recursive
+RUN cd $MILESAN_DESIGNS && git clone https://github.com/milesan-artifacts/milesan-kronos.git --recursive
+RUN cd $MILESAN_DESIGNS && git clone https://github.com/milesan-artifacts/milesan-openc910.git --recursive
 
 RUN cd $TMP_MNT &&  git clone https://github.com/comsec-group/cellift-meta.git
-RUN cd $TMP_MNT && git clone  https://github.com/comsec-group/milesan-meta.git
+RUN echo "Cloning meta"
+RUN cd $TMP_MNT && git clone  https://github.com/milesan-artifacts/milesan-meta.git
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN python -m venv $PREFIX_MILESAN/python-venv
 ENV PATH=$PREFIX_MILESAN/python-venv/bin:$PATH
@@ -129,28 +129,28 @@ COPY ct-ttes.pickle $TMP_MNT/milesan-data/
 COPY perf.pickle $TMP_MNT/milesan-data/
 
 # # make run_* will naturally fail since no SIMLEN etc. are provided.
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm -f run*.core && make run_vanilla_notrace"|| true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-cva6/milesan && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
 # RUN conda install -c conda-forge conda-lock
 
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm -f run*.core && make run_vanilla_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-rocket && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_vanilla_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_vanilla_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/phantomtrails-chipyard/milesan-boom && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_vanilla_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-kronos/milesan && rm -f run*.core && make run_drfuzz_mem_trace" || true
 
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm run*.core && make run_vanilla_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm run*.core && make run_drfuzz_mem_notrace" || true
-RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm run*.core && make run_drfuzz_mem_trace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_vanilla_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_drfuzz_mem_notrace" || true
+RUN bash -c "source /$TMP_MNT/milesan-meta/env.sh && cd $MILESAN_DESIGNS/milesan-openc910/milesan && rm -f run*.core && make run_drfuzz_mem_trace" || true
