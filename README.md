@@ -21,5 +21,5 @@ Finally, move all contents of */tmp_mnt* to */mnt* to make them available to Mod
 ```
 mv /tmp_mnt/* /mnt/
 ```
-From there on, follow the instructions in *[/mnt/milesan-meta/README.md](https://github.com/comsec-group/milesan-meta)*.
+From there on, follow the instructions in *[/mnt/milesan-meta/README.md](https://github.com/milesan-artifacts/milesan-meta)*.
 
