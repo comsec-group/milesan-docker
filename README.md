@@ -29,9 +29,9 @@ Build the image by running
 ./build.sh
 ```
 This will gather all required sources, build the toolchain and setup the environment.
-## Usage
 Start the container with
 ```
 ./start.sh
 ```
-and follow the instructions in [milesan-meta/README.md](https://github.com/milesan-artifacts/milesan-meta).
+## Usage
+See [milesan-meta/README.md](https://github.com/milesan-artifacts/milesan-meta) for detailed usage instructions. 
