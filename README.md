@@ -13,13 +13,13 @@ QUESTASIM=[path-to-your-questasim]
 ```
 The Dockerfile then copies the binary into the image.
 ### Building from scratch
-Build the docker by running
+Build the image by running
 ```
 ./build.sh
 ```
 This will gather all required sources, build the toolchain and setup the environment.
 ## Usage
-Start the docker with
+Start the container with
 ```
 ./start.sh
 ```
