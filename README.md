@@ -3,8 +3,19 @@
 ## Overview
 Welcome to MileSan!
 This repository helps you with getting started with [MileSan](https://comsec.ethz.ch/research/hardware-design-security/milesan-detecting-exploitable-microarchitectural-leakage-via-differential-hardware-software-taint-tracking/), reproduce our results and further extend our codebase for your own research.
-The easiest way to use MileSan is via the docker image, which you can build as instructed below.
-
+The easiest way to use MileSan is via the docker image.
+Below we provide instructions to use our stock docker image, or build one from scratch.
+## Using the existing docker image
+You can pull the docker image using
+```
+docker pull docker.io/ethcomsec/milesan-artifacts
+```
+and start it with 
+```
+docker run -it docker.io/ethcomsec/milesan-artifacts
+```
+The docker comes with most utilities precompiled.
+If you would rather create your own image, or make changes to it, you can alternatively build it from scratch.
 ## Building the docker image
 ### Using Questasim
 To use Questasim, set QUESTASIM in **build.sh** accordingly.
