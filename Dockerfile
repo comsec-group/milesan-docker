@@ -29,14 +29,14 @@ ENV CARGO_HOME=$PREFIX_MILESAN/.cargo
 ENV RUSTUP_HOME=$PREFIX_MILESAN/.rustup
 ENV RISCV=$PREFIX_MILESAN/riscv
 ENV MILESAN_DESIGNS=/milesan-designs
-ENV MILESAN_DATA=/milesan-data
+ENV MILESAN_DATA=/mnt/milesan-data
 
 ENV RUSTEXEC=$CARGO_HOME/bin/rustc
 ENV RUSTUPEXEC=$CARGO_HOME/bin/rustup
 ENV CARGOEXEC=$CARGO_HOME/bin/cargo
 ENV PATH=$PATH:$PREFIX_MILESAN/bin
 ENV PATH=$PATH:$RISCV/bin
-COPY questasim /usr/local/questasim
+COPY --from=questasim questasim /usr/local/questasim
 ENV PATH="/usr/local/questasim/bin:${PATH}"
 
 
@@ -78,8 +78,6 @@ ENV GITLAB_BASE_GROUP="https://github.com/milesan-artifacts"
 RUN git clone $GITLAB_BASE_GROUP/milesan-yosys.git /milesan-yosys --recursive
 RUN cd milesan-yosys && git submodule update --init && make -j 200 && make install
 
-# Install milesan-meta
-RUN git clone $GITLAB_BASE_GROUP/milesan-meta.git /milesan-meta
 
 ##
 # Design repositories
@@ -93,16 +91,18 @@ RUN cd $MILESAN_DESIGNS && git clone $GITLAB_BASE_GROUP/milesan-kronos.git --rec
 RUN cd $MILESAN_DESIGNS && git clone $GITLAB_BASE_GROUP/milesan-chipyard.git
 RUN cd $MILESAN_DESIGNS/milesan-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
 COPY config-mixins.scala $MILESAN_DESIGNS/milesan-chipyard/generators/boom/src/main/scala/common
+RUN echo "Phantom trails repo"
 RUN cd $MILESAN_DESIGNS && git clone $GITLAB_BASE_GROUP/milesan-pt-chipyard.git phantomtrails-chipyard
-# add authentication token to .gitmodules
-RUN cd $MILESAN_DESIGNS/phantomtrails-chipyard && git submodule set-url generators/boom  $GITLAB_BASE_GROUP/milesan-pt-boom.git
 RUN cd $MILESAN_DESIGNS/phantomtrails-chipyard && MILESAN_JOBS=250 scripts/init-submodules-no-riscv-tools.sh -f
 ENV PATH=$PREFIX_MILESAN/python-venv/bin:$PATH
-
 RUN pip install setuptools fusesoc
 
 # Install makeelf in the milesan python-venv
 RUN git clone https://github.com/flaviens/makeelf && cd makeelf && git checkout finercontrol && python setup.py install
+
+# Install milesan-meta
+RUN git clone $GITLAB_BASE_GROUP/milesan-meta.git /milesan-meta
+#RUN bash -c "cd /milesan-meta/ && source env.sh && python design-processing/make_all_designs.py --verilator --modelsim --exclude-designs kronos"
 
 # install oh-my-bash
 RUN bash -c "$(wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O -)"

@@ -1,3 +1,4 @@
 set -e
 IMAGE_TAG=milesan-image-pub
-docker build  -f Dockerfile -t $IMAGE_TAG  .
+QUESTASIM=/usr/local/questa-2022-03/
+docker build  --build-context questasim=$QUESTASIM -f Dockerfile -t $IMAGE_TAG  .
