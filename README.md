@@ -35,3 +35,15 @@ Start the container with
 ```
 ## Usage
 See [milesan-meta/README.md](https://github.com/milesan-artifacts/milesan-meta) for detailed usage instructions. 
+
+## Citation
+If you use MileSan for your own research, please cite our paper:
+```
+@inproceedings{kovats2025milesan,
+  title={Milesan: Detecting exploitable microarchitectural leakage via differential hardware-software taint tracking},
+  author={Kovats, Tobias and Solt, Flavien and Ceesay-Seitz, Katharina and Razavi, Kaveh},
+  booktitle={Proceedings of the 2025 ACM SIGSAC Conference on Computer and Communications Security},
+  pages={2579--2593},
+  year={2025}
+}
+```
